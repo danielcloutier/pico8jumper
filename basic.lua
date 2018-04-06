@@ -9,7 +9,7 @@ currentcelly = 0 --y position of current cell
 camx = 0 --camera x position for scrolling
 camy = 0 --camera x position for scrolling
 
-playerformerx = 10
+playerformerx = 80
 playerformery = 10
 playerx = 80 --x position of our player
 playery = 10 --y position of our player
@@ -19,7 +19,7 @@ health = 5
 
 collisionsplash = {}
 
-gravity = 0.15
+gravity = 0.20
 
 currentplayersprite = 64 --1 --sprite to draw at current cycle
 firstplayersprite = 64 --1 --first playersprite in the sequence
@@ -278,8 +278,12 @@ function moveplayer(changex, changey)
  if(currentcell== 46) then
   startmoonjourney()
  end
-   
-   
+
+ --check for dark mode trigger
+ if(currentcell== 47) then
+  triggerdarkmode()
+ end
+ 
     playerx += changex
 	playery += changey
 
@@ -290,6 +294,13 @@ function moveplayer(changex, changey)
       currentplayersprite = firstplayersprite
      end
     end
+end
+
+function triggerdarkmode()
+  mset(21,19,16)
+  mset(22,19,32)
+  mset(23,19,33)
+  mset(24,19,17)
 end
 
 function startmoonjourney()
@@ -448,8 +459,8 @@ function movecamera(x,y)
 	camy = y - (128 / 2)
 	
 	if(moonjourney) then 
-	   camx = moonx * 8  - 30
-	   camy = moony * 8
+	   camx = moonx * 8 - (128 / 2)
+	   camy = moony * 8 - (128 / 2)
 	end
 	
 	if(camx < 0) then 
@@ -601,8 +612,11 @@ mset(15,31, 37 + animationcycle)   --fire
 mset(19,22, 37 + animationcycle)   --fire
 mset(13,17, 37 + animationcycle)   --fire
 
+mset(9,13, 11 + animationcycle)   --star
 mset(10,06, 11 + animationcycle)   --star
 mset(4,7, 27 + animationcycle)   --star
+mset(6,25, 11 + animationcycle)   --star
+mset(22,21, 27 + animationcycle)   --star
 
  if(stepcount % 10 == 0) then
    animationcycle += 1
