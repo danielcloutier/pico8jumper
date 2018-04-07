@@ -141,6 +141,7 @@ end
 
 function makeenemies()
   local enemy = {}
+  enemy.type = "imp"
   enemy.x = 20
   enemy.y = 240
   enemy.dx = rnd(0.7)
@@ -151,6 +152,7 @@ function makeenemies()
   enemy.sprite = 57
   add(enemies, enemy)
   local enemy2 = {}
+  enemy2.type = "imp"
   enemy2.x = 90
   enemy2.y = 193
   enemy2.dx = rnd(0.7)
@@ -161,6 +163,7 @@ function makeenemies()
   enemy2.sprite = 58
   add(enemies, enemy2)
     local enemy3 = {}
+  enemy3.type = "imp"
   enemy3.x = 90
   enemy3.y = 129
   enemy3.dx = rnd(0.7)
@@ -171,6 +174,7 @@ function makeenemies()
   enemy3.sprite = 59
   add(enemies, enemy3)
     local enemy4 = {}
+  enemy4.type = "imp"
   enemy4.x = 132
   enemy4.y = 73
   enemy4.dx = rnd(0.8)
@@ -180,7 +184,19 @@ function makeenemies()
   enemy4.ymax2 = 129
   enemy4.sprite = 59
   add(enemies, enemy4)
-end
+    local enemy5 = {}
+  enemy5.type = "gargoyle"
+  enemy5.x = 140
+  enemy5.y = 150
+  enemy5.dx = rnd(1)
+  enemy5.dy = rnd(1)
+  enemy5.xmax1 = 136
+  enemy5.xmax2 = 146
+  enemy5.ymax1 = 135
+  enemy5.ymax2 = 155
+  enemy5.sprite = 96
+  add(enemies, enemy5)
+  end
 
 function _update()
  stepcount += 1
@@ -272,7 +288,7 @@ function moveplayer(changex, changey)
      return
     end
  
- texttoprint = currentcell
+ texttoprint = playerx .. "|" .. playery
  
  --check for final moon jump 
  if(currentcell== 46) then
@@ -346,7 +362,14 @@ function moveenemy(enemy)
   if(enemy.x < enemy.xmax1 or enemy.x > enemy.xmax2) then
     enemy.dx = enemy.dx * -1
   end
+  if(enemy.type=="gargoyle") then
+    if(enemy.y < enemy.ymax1 or enemy.y > enemy.ymax2) then
+      enemy.dy = enemy.dy * -1
+    end	
+    enemy.y += enemy.dy
+	end
   enemy.x += enemy.dx
+
 end
 
 function movebats()
@@ -541,9 +564,17 @@ function drawenemy(enemy)
 if(stepcount % 3 == 0) then
   enemy.sprite += 1
 end
+if(enemy.type=="imp") then
   if(enemy.sprite == 60) then
     enemy.sprite = 57
   end
+end
+if(enemy.type=="gargoyle") then
+  if(enemy.sprite == 99) then
+    enemy.sprite = 96
+  end
+end
+
   spr(enemy.sprite, enemy.x, enemy.y)
 end
 
