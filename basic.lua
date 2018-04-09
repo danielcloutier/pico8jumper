@@ -53,6 +53,7 @@ dynamiteinventorycellid = 12
   makewaterfall(8*8,28*8) 
 end
 
+
 function makewaterfall(x, y) 
   local watertile1 = {}
   watertile1.x = x
@@ -186,14 +187,14 @@ function makeenemies()
   add(enemies, enemy4)
     local enemy5 = {}
   enemy5.type = "gargoyle"
-  enemy5.x = 140
-  enemy5.y = 150
+  enemy5.x = 128
+  enemy5.y = 168
   enemy5.dx = rnd(1)
   enemy5.dy = rnd(1)
-  enemy5.xmax1 = 136
-  enemy5.xmax2 = 146
-  enemy5.ymax1 = 135
-  enemy5.ymax2 = 155
+  enemy5.xmax1 = 126
+  enemy5.xmax2 = 130
+  enemy5.ymax1 = 150
+  enemy5.ymax2 = 168
   enemy5.sprite = 96
   add(enemies, enemy5)
   end
@@ -288,7 +289,6 @@ function moveplayer(changex, changey)
      return
     end
  
- texttoprint = playerx .. "|" .. playery
  
  --check for final moon jump 
  if(currentcell== 46) then
@@ -356,6 +356,7 @@ end
 function moveenemies()
   foreach(enemies, moveenemy)
   enemiescollision()
+  --texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y)
 end
 
 function moveenemy(enemy)
@@ -416,14 +417,14 @@ function enemiescollision()
 end
 
 function enemycollision(enemy)
-  local enx0 = enemy.x -4
+  local enx0 = enemy.x - 4
   local enx1 = enemy.x + 4
   local eny0 = enemy.y - 4
   local eny1 = enemy.y + 4
   local plx0 = playerx - 4
   local plx1 = playerx + 4
-  local ply0 = playery - 4
-  local ply1 = playery + 4
+  local ply0 = playery - 8
+  local ply1 = playery --+ 4
   --texttoprint =  " py0: " .. flr(ply0) .. "py1: " .. flr(ply1) .. " | ey0: " .. flr(eny0) .. "ey1: " .. flr(eny1)
   local collisionx = false
   local collisiony = false
@@ -435,8 +436,6 @@ function enemycollision(enemy)
     collisionx = true
   end
 
-  --texttoprint =  " py0:" .. flr(ply0) .. " py1:" .. flr(ply1) .. " | ey0:" .. flr(eny0) .. " ey1:" .. flr(eny1)
-  --collsions at Y
   if(eny0 > ply0 and eny0 < ply1) then
      collisiony = true
   elseif(eny1 > ply0 and eny1 < ply1) then
@@ -445,9 +444,12 @@ function enemycollision(enemy)
   
   if(collisionx) then
     if(collisiony) then
+		 texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y .. " collision!")  
 	  collisionjump()
 	end
 end
+  
+	 texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y)  
   
  -- if((enx0 > plx0 and enx0 < plx1) or (enx1 > plx0 and enx1 < plx1)) then
  --   textttoprint = "col1"
@@ -534,7 +536,7 @@ end
 
 function drawui()
  rectfill(camx, camy+116, camx+127, camy+127, 4 )
- print(texttoprint, camx+4, camy+120, 9)
+ printh(texttoprint, camx+4, camy+120, 9)
 drawhearts() 
 end
 
@@ -624,7 +626,9 @@ function jump()
 end
 
 function collisionjump()
-   jump()
+    playerdy = -3
+    moveplayer(0, playerdy)
+    playerjumping = true
    makecollisionsplash()
    health -= 1
  end
