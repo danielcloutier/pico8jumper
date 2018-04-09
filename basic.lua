@@ -1,5 +1,7 @@
 function _init()
 
+level = 1
+
 stepcount = 0 --count of every update() call. max 100, thant starting over at 0
 
 currentcell = 0 --current cell id
@@ -241,9 +243,12 @@ function _update()
  playerformery = playery --save y for next iteration
  if(moonjourney) then 
    movemoon()
+   texttoprint = moonx
+   if(moonx > 30) then
+      level = 2
+   end
  end
- 
- end
+end
 
  function movemoon()
    moonx += 0.25
@@ -444,12 +449,12 @@ function enemycollision(enemy)
   
   if(collisionx) then
     if(collisiony) then
-		 texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y .. " collision!")  
+		 --texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y .. " collision!")  
 	  collisionjump()
 	end
 end
   
-	 texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y)  
+	 --texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y)  
   
  -- if((enx0 > plx0 and enx0 < plx1) or (enx1 > plx0 and enx1 < plx1)) then
  --   textttoprint = "col1"
@@ -511,6 +516,11 @@ function _draw()
    return
  end
  
+ if(level==2) then
+   map(18,1)
+   return
+ end
+ 
  map(1,1)
  drawclouds()
   drawbats()
@@ -536,7 +546,7 @@ end
 
 function drawui()
  rectfill(camx, camy+116, camx+127, camy+127, 4 )
- printh(texttoprint, camx+4, camy+120, 9)
+ print(texttoprint, camx+4, camy+120, 9)
 drawhearts() 
 end
 
@@ -629,7 +639,6 @@ function collisionjump()
     playerdy = -3
     moveplayer(0, playerdy)
     playerjumping = true
-   makecollisionsplash()
    health -= 1
  end
 
