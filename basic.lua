@@ -229,7 +229,20 @@ function _update()
  if (btn(4)) then
    fire()
  end
-  
+ 
+if(moonjourney) then 
+   movemoon()
+   if not (level == 2) then
+	   if(moonx > 30) then  -- As soon as the moon is out the screen, start level 2
+		  level = 2
+		  moonjourney = false
+		  --gravity = 0.08  -- moon!
+		  playerx = 82 -- set this realtive to  camera. very strange behaviour on behalf of pico8
+		  playery = 240
+	   end
+	 end
+ end
+ 
  movecamera(playerx, playery)
  moveshootingstars()
  makeshootingstar() -- once every 100 steps
@@ -241,13 +254,7 @@ function _update()
  moveplayer(0, playerdy)
  playerformerx = playerx --save x for next iteration
  playerformery = playery --save y for next iteration
- if(moonjourney) then 
-   movemoon()
-   texttoprint = moonx
-   if(moonx > 30) then
-      level = 2
-   end
- end
+ 
 end
 
  function movemoon()
@@ -487,6 +494,14 @@ end
 function movecamera(x,y)
     camx = x - (128 / 2)
 	camy = y - (128 / 2)
+	camxmax0 = 0
+	camxmax1 = 80
+	camymax0 = 0
+	camymax1 = 140
+	
+	if(level == 2) then
+	   -- TODO: change the cam limits cam*max*
+	end
 	
 	if(moonjourney) then 
 	   camx = moonx * 8 - (128 / 2)
@@ -511,14 +526,18 @@ end
 function _draw()
  cls()
  
+ texttoprint = playerx .. " | " .. playery
+ 
  if(dead) then 
    printendscreen()
    return
  end
  
  if(level==2) then
-   map(18,1)
-   return
+    map(18,1)
+    spr(currentplayersprite,playerx,playery) 
+	drawui()
+    return
  end
  
  map(1,1)
