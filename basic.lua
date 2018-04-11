@@ -1,7 +1,5 @@
 function _init()
 
-level = 1
-
 stepcount = 0 --count of every update() call. max 100, thant starting over at 0
 
 currentcell = 0 --current cell id
@@ -11,10 +9,10 @@ currentcelly = 0 --y position of current cell
 camx = 0 --camera x position for scrolling
 camy = 0 --camera x position for scrolling
 
-playerformerx = 80
-playerformery = 10
-playerx = 80 --x position of our player
-playery = 10 --y position of our player
+playerformerx = 2
+playerformery = 200
+playerx = 2--x position of our player
+playery = 200 --y position of our player
 playerdy = 0
 playerjumping = false
 health = 5
@@ -106,10 +104,10 @@ function makeshootingstar()
 end
 
 function makebats()
-	for c=0,12 do
+	for c=0,16 do
 	  local bat = {}
-	  bat.x = flr(rnd(200))
-	  bat.y = flr(rnd(220))
+	  bat.x = flr(rnd(300))
+	  bat.y = flr(rnd(200))
 	  if(rnd(2) > 1) then -- some fly left, some right
 	     bat.dx = rnd(0.3)
 	  else
@@ -129,7 +127,7 @@ function makeclouds()
 	for c=0,15 do
 	  local cloud1 = {}
 	  cloud1.x = flr(rnd(200))
-	  cloud1.y = flr(rnd(220))
+	  cloud1.y = flr(rnd(300))
 	  cloud1.sprite1 = 41
 	  cloud1.sprite2 = 42
 	  cloud1.dx = rnd(0.09)
@@ -190,15 +188,61 @@ function makeenemies()
     local enemy5 = {}
   enemy5.type = "gargoyle"
   enemy5.x = 128
-  enemy5.y = 168
+  enemy5.y = 145
   enemy5.dx = rnd(1)
   enemy5.dy = rnd(1)
   enemy5.xmax1 = 126
   enemy5.xmax2 = 130
-  enemy5.ymax1 = 150
-  enemy5.ymax2 = 168
+  enemy5.ymax1 = 125
+  enemy5.ymax2 = 150
   enemy5.sprite = 96
   add(enemies, enemy5)
+     local enemy6 = {}
+  enemy6.type = "imp"
+  enemy6.x = 270
+  enemy6.y = 185
+  enemy6.dx = rnd(1)
+  enemy6.xmax1 = 262
+  enemy6.xmax2 = 282
+  enemy6.ymax1 = 185
+  enemy6.ymax2 = 185
+  enemy6.sprite = 59
+  add(enemies, enemy6)
+  local enemy7 = {}
+  enemy7.type = "gargoyle"
+  enemy7.x = 270
+  enemy7.y = 155
+  enemy7.dx = rnd(0.8)
+  enemy7.dy = rnd(1.2)
+  enemy7.xmax1 = 268
+  enemy7.xmax2 = 278
+  enemy7.ymax1 = 130
+  enemy7.ymax2 = 155
+  enemy7.sprite = 96
+  add(enemies, enemy7)
+    local enemy8 = {}
+  enemy8.type = "gargoyle"
+  enemy8.x = 98
+  enemy8.y = 70
+  enemy8.dx = rnd(1.3)
+  enemy8.dy = rnd(1.2)
+  enemy8.xmax1 = 98
+  enemy8.xmax2 = 118
+  enemy8.ymax1 = 60
+  enemy8.ymax2 = 105
+  enemy8.sprite = 96
+  add(enemies, enemy8)
+     local enemy9 = {}
+  enemy9.type = "imp"
+  enemy9.x = 70
+  enemy9.y = 65
+  enemy9.dx = rnd(1.1)
+  enemy9.xmax1 = 52
+  enemy9.xmax2 = 82
+  enemy9.ymax1 = 65
+  enemy9.ymax2 = 65
+  enemy9.sprite = 59
+  add(enemies, enemy9)
   end
 
 function _update()
@@ -232,15 +276,9 @@ function _update()
  
 if(moonjourney) then 
    movemoon()
-   if not (level == 2) then
-	   if(moonx > 30) then  -- As soon as the moon is out the screen, start level 2
-		  level = 2
-		  moonjourney = false
-		  --gravity = 0.08  -- moon!
-		  playerx = 82 -- set this realtive to  camera. very strange behaviour on behalf of pico8
-		  playery = 240
-	   end
-	 end
+   if(moonx > 30) then  -- As soon as the moon is out the screen, start level 2
+	  --TODO End Game
+   end
  end
  
  movecamera(playerx, playery)
@@ -391,12 +429,12 @@ end
 
 function movebat(bat)
   if(bat.x < 10) then
-     bat.x = 200
+     bat.x = 300
   end
   if(bat.y < 10) then
      bat.y = 200
   end
-  if(bat.x > 200) then
+  if(bat.x > 300) then
      bat.x = 10
   end
   if(bat.y > 200) then
@@ -419,7 +457,7 @@ end
 
 function movecloud(cloud)
   if(cloud.x < 10) then
-     cloud.x = 200
+     cloud.x = 300
   end
   cloud.x -= cloud.dx
 end
@@ -494,15 +532,7 @@ end
 function movecamera(x,y)
     camx = x - (128 / 2)
 	camy = y - (128 / 2)
-	camxmax0 = 0
-	camxmax1 = 80
-	camymax0 = 0
-	camymax1 = 140
-	
-	if(level == 2) then
-	   -- TODO: change the cam limits cam*max*
-	end
-	
+
 	if(moonjourney) then 
 	   camx = moonx * 8 - (128 / 2)
 	   camy = moony * 8 - (128 / 2)
@@ -511,8 +541,8 @@ function movecamera(x,y)
 	if(camx < 0) then 
 	   camx = 0
 	end
-    if(camx > 80) then 
-	   camx = 80
+    if(camx > 200) then 
+	   camx = 200
 	end
 	if(camy < 0) then 
 	   camy = 0
@@ -531,13 +561,6 @@ function _draw()
  if(dead) then 
    printendscreen()
    return
- end
- 
- if(level==2) then
-    map(18,1)
-    spr(currentplayersprite,playerx,playery) 
-	drawui()
-    return
  end
  
  map(1,1)
