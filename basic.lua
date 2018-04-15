@@ -9,10 +9,12 @@ currentcelly = 0 --y position of current cell
 camx = 0 --camera x position for scrolling
 camy = 0 --camera x position for scrolling
 
-playerformerx = 2
-playerformery = 200
-playerx = 2--x position of our player
-playery = 200 --y position of our player
+texttoprint = "jump up to the moon"
+
+playerformerx = 60
+playerformery = 20
+playerx = 60--x position of our player
+playery = 20 --y position of our player
 playerdy = 0
 playerjumping = false
 health = 5
@@ -32,12 +34,14 @@ shootingstars = {}
 enemies = {}
 waterfall = {}
 
+amulettfound = false
 moonjourney = false
 moonx = 3
 moony = 3
 
 animationcycle = 0 --stepcounter for animation
 dead = false
+gamefinished = false
 
 --flags on sprites
 solid = 0
@@ -251,12 +255,7 @@ function _update()
  currentcellx = getcurrentcellx(playerx)
  currentcelly = getcurrentcelly(playery)
  currentcell = mget(currentcellx,currentcelly)
- 
- --if currentcell contains water -> drink it!
- if(fget(currentcell,fire)) then
-   --TODO
-   --takeitem(water)
- end
+
  
   if (btn(0)) then
    moveplayer(-pixelsperstep, 0)
@@ -276,11 +275,12 @@ function _update()
  
 if(moonjourney) then 
    movemoon()
-   if(moonx > 30) then  -- As soon as the moon is out the screen, start level 2
-	  --TODO End Game
+   if(moonx > 40) then  -- As soon as the moon is out the screen, start  
+      gamefinished = true
    end
  end
- 
+
+
  movecamera(playerx, playery)
  moveshootingstars()
  makeshootingstar() -- once every 100 steps
@@ -297,6 +297,7 @@ end
 
  function movemoon()
    moonx += 0.25
+    playerx += 0.25 * 8   -- keep the player on the moon as it travels
  end
  
  --more like animate
@@ -341,13 +342,25 @@ function moveplayer(changex, changey)
  
  
  --check for final moon jump 
- if(currentcell== 46) then
-  startmoonjourney()
+ if(currentcell== 46) then -- if above moon
+   texttoprint = "something is missing"
+   if(amulettfound) then  -- start only if the hidden amulett is found
+   texttoprint = "starting moon journey"
+    startmoonjourney()
+    end
+ end
+ 
+  if(currentcell== 67) then
+    texttoprint = "you've found an amulett!"
+    amulettfound = true
+	mset(22,18,09)
  end
 
  --check for dark mode trigger
  if(currentcell== 47) then
-  triggerdarkmode()
+  texttoprint = "something changed"
+  triggerdarkmode() -- make amulett isle black and grey
+  mset(22,18,67) --set amulett visible
  end
  
     playerx += changex
@@ -375,7 +388,10 @@ function startmoonjourney()
    mset(5,4,6)
    mset(4,5,7)
    mset(5,5,6)
-end
+   gravity = 0
+   playery = 20
+   playerdy = 0
+   end
 
 function moveshootingstars()
   foreach(shootingstars, moveshootingstar)
@@ -406,7 +422,6 @@ end
 function moveenemies()
   foreach(enemies, moveenemy)
   enemiescollision()
-  --texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y)
 end
 
 function moveenemy(enemy)
@@ -475,7 +490,6 @@ function enemycollision(enemy)
   local plx1 = playerx + 4
   local ply0 = playery - 8
   local ply1 = playery --+ 4
-  --texttoprint =  " py0: " .. flr(ply0) .. "py1: " .. flr(ply1) .. " | ey0: " .. flr(eny0) .. "ey1: " .. flr(eny1)
   local collisionx = false
   local collisiony = false
   
@@ -493,20 +507,12 @@ function enemycollision(enemy)
   end
   
   if(collisionx) then
-    if(collisiony) then
-		 --texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y .. " collision!")  
+    if(collisiony) then  
 	  collisionjump()
+	  texttoprint = "ouch!"
 	end
 end
-  
-	 --texttoprint = "pX:" .. flr(playerx ).. ", pY:" .. flr(playery) .. " || gX:" .. flr(enemies[5].x) .. " gY:" .. flr(enemies[5].y)  
-  
- -- if((enx0 > plx0 and enx0 < plx1) or (enx1 > plx0 and enx1 < plx1)) then
- --   textttoprint = "col1"
-  --  if((eny0 > ply0 and eny0 < ply1) or (eny1 > ply0 and eny1 < ply1)) then
---	   textttoprint = "col2"
---	end
---  end
+
 end
 
 function collision(x,y) 
@@ -555,10 +561,13 @@ end
 
 function _draw()
  cls()
- 
- texttoprint = playerx .. " | " .. playery
- 
+
  if(dead) then 
+   printdeadscreen()
+   return
+ end
+ 
+  if(gamefinished) then 
    printendscreen()
    return
  end
@@ -569,9 +578,9 @@ function _draw()
  drawshootingstars()
 drawenemies()
 drawwaterfall()
- if not(moonjourney) then
+-- if not(moonjourney) then
     spr(currentplayersprite,playerx,playery) 
-  end 
+--  end 
   animatemap()
  drawmoon()
  drawui()
@@ -587,7 +596,7 @@ function drawmoon()
 end
 
 function drawui()
- rectfill(camx, camy+116, camx+127, camy+127, 4 )
+ --rectfill(camx, camy+116, camx+127, camy+127, 4 )
  print(texttoprint, camx+4, camy+120, 9)
 drawhearts() 
 end
@@ -657,15 +666,6 @@ function drawshootingstar(star)
   line( star.x0, star.y0, star.x1, star.y1, 7)
 end
 
-function takeitem(id)
- --set found-boolean to print in inventory
- --remove cell from map, example:
- --  if(currentcell == blueperl) then 
- --    blueperlfound = true 
- --    mset(39,30,8)
- --    texttoprint = "blue perl found!"
-end
-
 function fire()
 end
 
@@ -682,6 +682,11 @@ function collisionjump()
     moveplayer(0, playerdy)
     playerjumping = true
    health -= 1
+    
+	 if(health == 0) then
+	   dead = true
+	end
+
  end
 
  function makecollisionsplash()
@@ -712,16 +717,14 @@ mset(22,21, 27 + animationcycle)   --star
  end
 end
 
-function printendscreen()
-  print("! d e a d !", camx+30, camy+20, 8)
+function printdeadscreen()
+  print("! d e a d !", camx+30, camy+60, 8)
 end
 
-function printstartscreen()
-  print("Lets.", camx+1, camy+40, 11)
-  print("start", camx+1, camy+48, 11)
-  print("our", camx+1, camy+64,12)
-  print("yourney", camx+1, camy+72,12)
-  print("now.", camx+1, camy+88,8)
+function printendscreen()
+  print("Congratulations.", camx+1, camy+40, 11)
+  print("You are now", camx+1, camy+48, 11)
+  print("on the moon.", camx+1, camy+64,12)
 end
 
 function getcurrentcellx(x)
